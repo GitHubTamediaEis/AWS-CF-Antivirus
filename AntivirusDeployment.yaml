@@ -1,12 +1,16 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Deploy Cybereason Sensor
 Parameters:
-  EC2TagName:
+  AntivirusTagName:
     Default: 'Antivirus'
     Type: String
-  EC2TagValue:
+    Description: Enter the tag name
+  AntivirusTagValue:
     Default: 'yes'
     Type: String
+    Description: Enter the value
+    AllowedValues: [yes, no]
+    ConstraintDescription: You must specify "yes" or "no"
 Resources:
   CybereasonDocument:
     Type: AWS::SSM::Document
