@@ -8,4 +8,4 @@ Used to deploy the Antivirus on Amazon EC2 instances
 - AWS CLI installed
 
 # How to deploy the Antivirus
-- To deploy the Antivirus, you need to select a TagName and add it with the value "yes" on the EC2 instances.r the ability to update to a new one
+- To deploy the Antivirus, you need to select a TagName and add it with the value "yes" on the EC2 instances
