@@ -27,6 +27,7 @@ Resources:
           inputs:
             runCommand:
             - !Sub |
+                $ErrorActionPreference = "Stop"
                 if(-not (Get-WmiObject Win32_Product -Filter "Name='Cybereason Sensor'")){
                   $folder=Join-Path ([System.IO.Path]::GetTempPath()) 'CybereasonInstall'
                   Copy-S3Object -BucketName 'cybereasonsensor' -KeyPrefix '/Windows/' -LocalFolder $folder
@@ -43,6 +44,7 @@ Resources:
             runCommand:
             - !Sub |
                 #!/bin/bash
+                set -e
                 if ! rpm -qi cybereason-sensor --quiet; then
                   agentPath='/tmp/cybereasonInstall'
                   aws s3 cp s3://cybereasonsensor/Linux/ $agentPath --recursive
