@@ -10,7 +10,14 @@ Parameters:
     Type: String
     Description: Enter the value
 Metadata: 
-  AWS::CloudFormation::Interface: 
+  AWS::CloudFormation::Interface:
+    ParameterGroups: 
+      - 
+        Label: 
+          default: "Antivirus"
+        Parameters: 
+          - EC2TagName
+          - EC2TagValue
     ParameterLabels: 
       EC2TagName:
         default: "Name of the tag used to deploy the antivirus"
