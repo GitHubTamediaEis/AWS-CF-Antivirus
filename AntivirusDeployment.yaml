@@ -9,8 +9,6 @@ Parameters:
     Default: 'yes'
     Type: String
     Description: Enter the value
-    AllowedValues: [yes, no]
-    ConstraintDescription: You must specify "yes" or "no"
 Resources:
   CybereasonDocument:
     Type: AWS::SSM::Document
