@@ -1,11 +1,11 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Deploy Cybereason Sensor
 Parameters:
-  EC2TagName:
+  AVTagName:
     Default: 'Antivirus'
     Type: String
     Description: Enter the tag name
-  EC2TagValue:
+  AVTagValue:
     Default: 'yes'
     Type: String
     Description: Enter the value
@@ -16,12 +16,12 @@ Metadata:
         Label: 
           default: "Antivirus"
         Parameters: 
-          - EC2TagName
-          - EC2TagValue
+          - AVTagName
+          - AVTagValue
     ParameterLabels: 
-      EC2TagName:
+      AVTagName:
         default: "Name of the tag used to deploy the antivirus"
-      EC2TagValue:
+      AVTagValue:
         default: "Value used to deploy the antivirus"
 Resources:
   CybereasonDocument:
@@ -71,6 +71,6 @@ Resources:
       Name: !Ref CybereasonDocument
       ScheduleExpression: rate(2 hours)
       Targets:
-      - Key: !Sub tag:${EC2TagName}
+      - Key: !Sub tag:${AVTagName}
         Values: 
-        - !Ref EC2TagValue
+        - !Ref AVTagValue
