@@ -2,7 +2,7 @@
 
 Used to deploy the Antivirus on Amazon EC2 instances based on tag.
 
-# AWS-CF-AntivirusDeployment.yaml
+# AntivirusDeployment.yaml
 
 This file is a CloudFormation template that deploys the Antivirus.
 
