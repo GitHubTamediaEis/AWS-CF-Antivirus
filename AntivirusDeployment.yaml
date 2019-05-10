@@ -13,7 +13,7 @@ Parameters:
     Default: 'yes'
     Type: String
     Description: Enter the value
-    AllowedValues: [yes, no]
+    AllowedValues: ['yes', 'no']
     ConstraintDescription: You must specify "yes" or "no"
 Metadata: 
   AWS::CloudFormation::Interface:
@@ -24,9 +24,6 @@ Metadata:
         Parameters: 
           - AVTagName
           - AVTagValue
-        Label: 
-          default: "Logging"
-        Parameters: 
           - LoggingWanted
     ParameterLabels: 
       AVTagName:
