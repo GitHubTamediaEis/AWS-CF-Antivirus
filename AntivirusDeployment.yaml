@@ -4,7 +4,7 @@ Parameters:
   AVTagName:
     Default: 'Antivirus'
     Type: String
-    Description: Enter the tag name
+    Description: Enter the tag's name
   AVTagValue:
     Default: 'yes'
     Type: String
@@ -14,7 +14,16 @@ Parameters:
     Type: String
     Description: Enter the value
     AllowedValues: ['yes', 'no']
-    ConstraintDescription: You must specify "yes" or "no"
+  SpecifyBucketName:
+    Default: 'no'
+    Type: String
+    Description: Enter the value
+  BucketName:
+    Type: String
+    Description: Enter the bucket's name
+Conditions: 
+  EnableLogging: !Equals [ !Ref LoggingWanted, 'yes' ]
+  CreateS3Bucket: !Equals [ !Ref SpecifyBucketName, 'yes' ]
 Metadata: 
   AWS::CloudFormation::Interface:
     ParameterGroups: 
@@ -24,7 +33,13 @@ Metadata:
         Parameters: 
           - AVTagName
           - AVTagValue
+      - 
+        Label: 
+          default: "Logging"
+        Parameters: 
           - LoggingWanted
+          - SpecifyBucketName
+          - BucketName
     ParameterLabels: 
       AVTagName:
         default: "Name of the tag used to deploy the antivirus"
@@ -32,6 +47,10 @@ Metadata:
         default: "Value used to deploy the antivirus"
       LoggingWanted:
         default: "Do you want to log to an S3 bucket?"
+      SpecifyBucketName:
+        default: "Do you want to use an existing bucket?"
+      BucketName:
+        default: "Enter the name of the existing bucket you want to use"
 Resources:
   CybereasonDocument:
     Type: AWS::SSM::Document
