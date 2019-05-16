@@ -2,56 +2,79 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: Deploy Cybereason Sensor
 Parameters:
   AVTagName:
-    Default: 'Antivirus'
+    Default: Antivirus
     Type: String
-    Description: Enter the tag's name
-  AVTagValue:
+    Description: Tag name of the target EC2 instances
+  AVTagValues:
     Default: 'yes'
-    Type: String
-    Description: Enter the value
-  LoggingWanted:
-    Default: 'yes'
-    Type: String
-    Description: Enter the value
-    AllowedValues: ['yes', 'no']
-  SpecifyBucketName:
-    Default: 'no'
-    Type: String
-    Description: Enter the value
+    Type: CommaDelimitedList
+    Description: Tags values of the target EC2 instances
   BucketName:
     Type: String
-    Description: Enter the bucket's name
-Conditions: 
-  EnableLogging: !Equals [ !Ref LoggingWanted, 'yes' ]
-  CreateS3Bucket: !Equals [ !Ref SpecifyBucketName, 'yes' ]
-Metadata: 
+    Description: Bucket name for association's logs
+  BucketPrefix:
+    Type: String
+    Description: Bucket prefix for association's logs
+Conditions:
+  CreateS3Bucket: !Equals [ !Ref BucketName, '' ]
+Metadata:
   AWS::CloudFormation::Interface:
-    ParameterGroups: 
-      - 
-        Label: 
-          default: "Antivirus"
-        Parameters: 
+    ParameterGroups:
+      -
+        Label:
+          default: Antivirus
+        Parameters:
           - AVTagName
-          - AVTagValue
-      - 
-        Label: 
-          default: "Logging"
-        Parameters: 
-          - LoggingWanted
-          - SpecifyBucketName
+          - AVTagValues
+      -
+        Label:
+          default: Logging
+        Parameters:
           - BucketName
-    ParameterLabels: 
+    ParameterLabels:
       AVTagName:
-        default: "Name of the tag used to deploy the antivirus"
-      AVTagValue:
-        default: "Value used to deploy the antivirus"
-      LoggingWanted:
-        default: "Do you want to log to an S3 bucket?"
-      SpecifyBucketName:
-        default: "Do you want to use an existing bucket?"
+        default: Name of the tag used to deploy the antivirus
+      AVTagValues:
+        default: Value(s) used to deploy the antivirus
       BucketName:
-        default: "Enter the name of the existing bucket you want to use"
+        default: Enter the name of an existing bucket that you want to use or leave blank to create a new bucket
+      BucketPrefix:
+        default: Enter the prefix of the bucket
 Resources:
+  LoggingBucket:
+    Type: AWS::S3::Bucket
+    Condition: CreateS3Bucket
+    Properties:
+      LifecycleConfiguration:
+        Rules: 
+        - ExpirationInDays: 90
+          Status: Enabled
+  LoggingBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Condition: CreateS3Bucket
+    Properties:
+      Bucket: 
+        Ref: LoggingBucket
+      PolicyDocument:
+        Statement:
+        - Effect: Allow
+          Action:
+          - s3:GetBucketLocation
+          - s3:PutObject
+          - s3:GetObject
+          - s3:GetEncryptionConfiguration
+          - s3:AbortMultipartUpload
+          - s3:ListMultipartUploadParts
+          - s3:ListBucket
+          - s3:ListBucketMultipartUploads
+          Resource:
+          - !Ref LoggingBucket
+          - !Sub ${LoggingBucket}/*
+          Principal:
+            AWS: '*'
+          Condition:
+            ArnLike:
+              aws:PrincipalArn: !Sub arn:aws:iam::${AWS::AccountId}:role/*
   CybereasonDocument:
     Type: AWS::SSM::Document
     Properties:
@@ -68,7 +91,7 @@ Resources:
             - Windows
           inputs:
             runCommand:
-            - !Sub |
+            - |
                 $ErrorActionPreference = "Stop"
                 if(-not (Get-WmiObject Win32_Product -Filter "Name='Cybereason Sensor'")){
                   $folder=Join-Path ([System.IO.Path]::GetTempPath()) 'CybereasonInstall'
@@ -84,7 +107,7 @@ Resources:
             - Linux
           inputs:
             runCommand:
-            - !Sub |
+            - |
                 #!/bin/bash
                 set -e
                 if ! rpm -qi cybereason-sensor --quiet; then
@@ -96,9 +119,15 @@ Resources:
   CybereasonDocumentAssociation:
     Type: AWS::SSM::Association
     Properties:
-      Name: !Ref CybereasonDocument
+      OutputLocation:
+        S3Location:
+          OutputS3BucketName:
+          - !If CreateS3Bucket
+          - !Ref LoggingBucket
+          - !Ref BucketName
+          OutputS3KeyPrefix: !Ref BucketPrefix
       ScheduleExpression: rate(2 hours)
+      Name: !Ref CybereasonDocument
       Targets:
       - Key: !Sub tag:${AVTagName}
-        Values: 
-        - !Ref AVTagValue
+        Values: !Ref AVTagValues
