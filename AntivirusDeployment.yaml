@@ -9,14 +9,14 @@ Parameters:
     Default: 'yes'
     Type: CommaDelimitedList
     Description: Tags values of the target EC2 instances
-  BucketName:
+  LogBucketName:
     Type: String
     Description: Bucket name for association's logs
-  BucketPrefix:
+  LogBucketPrefix:
     Type: String
     Description: Bucket prefix for association's logs
 Conditions:
-  CreateS3Bucket: !Equals [ !Ref BucketName, '' ]
+  CreateS3Bucket: !Equals [ !Ref LogBucketName, '' ]
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -30,15 +30,16 @@ Metadata:
         Label:
           default: Logging
         Parameters:
-          - BucketName
+          - LogBucketName
+          - LogBucketPrefix
     ParameterLabels:
       AVTagName:
         default: Name of the tag used to deploy the antivirus
       AVTagValues:
         default: Value(s) used to deploy the antivirus
-      BucketName:
+      LogBucketName:
         default: Enter the name of an existing bucket that you want to use or leave blank to create a new bucket
-      BucketPrefix:
+      LogBucketPrefix:
         default: Enter the prefix of the bucket
 Resources:
   LoggingBucket:
@@ -68,13 +69,13 @@ Resources:
           - s3:ListBucket
           - s3:ListBucketMultipartUploads
           Resource:
-          - !Ref LoggingBucket
-          - !Sub ${LoggingBucket}/*
+          - !GetAtt LoggingBucket.Arn
+          - !Sub ${LoggingBucket.Arn}/*
           Principal:
             AWS: '*'
           Condition:
             ArnLike:
-              aws:PrincipalArn: !Sub arn:aws:iam::${AWS::AccountId}:role/*
+              aws:PrincipalArn: "arn:aws:iam::${AWS::AccountId}:role/*"
   CybereasonDocument:
     Type: AWS::SSM::Document
     Properties:
@@ -122,10 +123,11 @@ Resources:
       OutputLocation:
         S3Location:
           OutputS3BucketName:
-          - !If CreateS3Bucket
-          - !Ref LoggingBucket
-          - !Ref BucketName
-          OutputS3KeyPrefix: !Ref BucketPrefix
+            !If
+            - CreateS3Bucket
+            - !Ref LoggingBucket
+            - !Ref LogBucketName
+          OutputS3KeyPrefix: !Ref LogBucketPrefix
       ScheduleExpression: rate(2 hours)
       Name: !Ref CybereasonDocument
       Targets:
