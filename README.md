@@ -23,6 +23,8 @@ Upon deployment you have to specify custom parameters which are explained hereaf
 
 # Instance considerations
 
+:heavy_exclamation_mark: **The instance will be restarted to uninstall Windows Defender** :heavy_exclamation_mark:
+
 Prerequisites to be able to deploy the Antivirus:
 - Python 2.7+ or 3.0+ installed
 - SSM agent installed

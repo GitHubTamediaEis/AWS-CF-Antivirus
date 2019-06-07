@@ -38,9 +38,9 @@ Metadata:
       AVTagValues:
         default: Value(s) used to deploy the antivirus
       LogBucketName:
-        default: Enter the name of an existing bucket that you want to use or leave blank to create a new bucket
+        default: Name of an existing bucket that you want to use or leave blank to create a new bucket
       LogBucketPrefix:
-        default: Enter the prefix of the bucket
+        default: Prefix of the bucket
 Resources:
   LoggingBucket:
     Type: AWS::S3::Bucket
@@ -84,6 +84,22 @@ Resources:
         description: Install Cybereason Sensor
         schemaVersion: '2.2'
         mainSteps:
+        - action: aws:runPowerShellScript
+          name: uninstallWindowsDefenderAndReboot
+          precondition:
+            StringEquals:
+            - platformType
+            - Windows
+          inputs:
+            runCommand:
+            - |
+                $ErrorActionPreference = "Stop"
+                $defender = Get-WindowsFeature -Name "Windows-Defender"
+                if( $defender.Installed){ 
+		              Uninstall-WindowsFeature -Name Windows-Defender
+                  # https://docs.aws.amazon.com/systems-manager/latest/userguide/send-commands-reboot.html
+                  exit 3010
+                }
         - action: aws:runPowerShellScript
           name: installCybereasonSensorWindows
           precondition:
