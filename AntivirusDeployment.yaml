@@ -95,8 +95,8 @@ Resources:
             - |
                 $ErrorActionPreference = "Stop"
                 $defender = Get-WindowsFeature -Name "Windows-Defender"
-                if( $defender.Installed){ 
-		              Uninstall-WindowsFeature -Name Windows-Defender
+                if($defender.Installed){
+                  $defender | Uninstall-WindowsFeature
                   # https://docs.aws.amazon.com/systems-manager/latest/userguide/send-commands-reboot.html
                   exit 3010
                 }
@@ -113,7 +113,7 @@ Resources:
                 if(-not (Get-WmiObject Win32_Product -Filter "Name='Cybereason Sensor'")){
                   $folder=Join-Path ([System.IO.Path]::GetTempPath()) 'CybereasonInstall'
                   Copy-S3Object -BucketName 'cybereasonsensor' -KeyPrefix '/Windows/' -LocalFolder $folder
-                  Start-Process (Join-Path $folder 'CybereasonSensor64_18_1_111_0_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_OfflineInstall.exe') -ArgumentList '/install','/norestart','/quiet','-l C:\Windows\Temp\CybereasonInstall.log','AP_APP_CTRL=1','ANTI_MALWARE=1','AP_AV_MODE=3','AP_SA_DETECT_MODE=3','AP_SA_PREVENT_MODE=1','AP_STATE=ACTIVE_NORMAL' -Wait
+                  Start-Process (Join-Path $folder 'CybereasonSensor64_19_0_70_0_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_OfflineInstall.exe') -ArgumentList '/install','/norestart','/quiet','-l C:\Windows\Temp\CybereasonInstall.log','AP_APP_CTRL=1','ANTI_MALWARE=1','AP_AV_MODE=3','AP_SA_DETECT_MODE=3','AP_SA_PREVENT_MODE=1','AP_STATE=ACTIVE_NORMAL' -Wait
                   Remove-Item $folder -Force -Recurse
                 }
         - action: aws:runShellScript
@@ -130,7 +130,7 @@ Resources:
                 if ! rpm -qi cybereason-sensor --quiet; then
                   agentPath='/tmp/cybereasonInstall'
                   aws s3 cp s3://cybereasonsensor/Linux/ $agentPath --recursive
-                  rpm -ihv $agentPath/cybereason-sensor-18.1.111.0-1.x86_64_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_rpm.rpm
+                  rpm -ihv $agentPath/cybereason-sensor-19.0.70.0-1.x86_64_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_rpm.rpm
                   rm -rf $agentPath
                 fi
   CybereasonDocumentAssociation:
