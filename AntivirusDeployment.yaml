@@ -95,8 +95,8 @@ Resources:
             - |
                 $ErrorActionPreference = "Stop"
                 $defender = Get-WindowsFeature -Name "Windows-Defender"
-                if( $defender.Installed){ 
-		              Uninstall-WindowsFeature -Name Windows-Defender
+                if($defender.Installed){
+                  $defender | Uninstall-WindowsFeature
                   # https://docs.aws.amazon.com/systems-manager/latest/userguide/send-commands-reboot.html
                   exit 3010
                 }
