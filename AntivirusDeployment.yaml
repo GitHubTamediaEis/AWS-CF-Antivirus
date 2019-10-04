@@ -113,7 +113,7 @@ Resources:
                 if(-not (Get-WmiObject Win32_Product -Filter "Name='Cybereason Sensor'")){
                   $folder=Join-Path ([System.IO.Path]::GetTempPath()) 'CybereasonInstall'
                   Copy-S3Object -BucketName 'cybereasonsensor' -KeyPrefix '/Windows/' -LocalFolder $folder
-                  Start-Process (Join-Path $folder 'CybereasonSensor64_19_1_32_0_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_OfflineInstall.exe') -ArgumentList '/install','/norestart','/quiet','-l C:\Windows\Temp\CybereasonInstall.log','AP_POLICIES_INITIAL_POLICY_ID=f1e84c69-41c2-47e8-8087-0c66953490db' -Wait
+                  Start-Process (Join-Path $folder 'CybereasonSensor64_19_1_32_0_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_OfflineInstall.exe') -ArgumentList '/install','/norestart','/quiet','-l C:\Windows\Temp\CybereasonInstall.log','AP_POLICIES_INITIAL_POLICY_ID=e38bbdd5-f4d2-47d5-b1d9-7ad69ad22ca0' -Wait
                   Remove-Item $folder -Force -Recurse
                 }
         - action: aws:runShellScript
