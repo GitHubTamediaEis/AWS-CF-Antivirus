@@ -51,32 +51,6 @@ Resources:
         Rules: 
         - ExpirationInDays: 90
           Status: Enabled
-  LoggingBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Condition: CreateS3Bucket
-    Properties:
-      Bucket: 
-        Ref: LoggingBucket
-      PolicyDocument:
-        Statement:
-        - Effect: Allow
-          Action:
-          - s3:GetBucketLocation
-          - s3:PutObject
-          - s3:GetObject
-          - s3:GetEncryptionConfiguration
-          - s3:AbortMultipartUpload
-          - s3:ListMultipartUploadParts
-          - s3:ListBucket
-          - s3:ListBucketMultipartUploads
-          Resource:
-          - !GetAtt LoggingBucket.Arn
-          - !Sub ${LoggingBucket.Arn}/*
-          Principal:
-            AWS: '*'
-          Condition:
-            ArnLike:
-              aws:PrincipalArn: "arn:aws:iam::${AWS::AccountId}:role/*"
   CybereasonDocument:
     Type: AWS::SSM::Document
     Properties:
