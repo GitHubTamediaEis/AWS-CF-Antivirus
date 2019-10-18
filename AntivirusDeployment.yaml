@@ -8,7 +8,7 @@ Parameters:
   AVTagValues:
     Default: 'yes'
     Type: CommaDelimitedList
-    Description: Tags values of the target EC2 instances
+    Description: Tag values of the target EC2 instances
   LogBucketName:
     Type: String
     Description: Bucket name for association's logs
