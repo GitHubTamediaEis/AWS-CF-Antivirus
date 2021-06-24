@@ -93,7 +93,7 @@ Resources:
             runCommand:
             - !Sub  |
                 $ErrorActionPreference = "Stop"
-                if(-not (Get-WmiObject Win32_Product -Filter "Name='Cybereason Sensor' AND Version <= '${AVVersion}'")){
+                if(-not (Get-WmiObject Win32_Product -Filter "Name='Cybereason Sensor' AND Version >= '${AVVersion}'")){
                   $folder=Join-Path ([System.IO.Path]::GetTempPath()) 'CybereasonInstall'
                   Copy-S3Object -BucketName 'cybereasonsensor' -KeyPrefix '/Windows/' -LocalFolder $folder
                   Start-Process (Join-Path $folder ('CybereasonSensor64_'+('${AVVersion}' -replace '\.','_')+'_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL')) -ArgumentList '/install','/norestart','/quiet','-l C:\Windows\Temp\CybereasonInstall.log','AP_POLICIES_INITIAL_POLICY_ID=e38bbdd5-f4d2-47d5-b1d9-7ad69ad22ca0' -Wait
