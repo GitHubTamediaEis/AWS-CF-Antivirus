@@ -11,7 +11,7 @@ Parameters:
     Description: Tag values of the target EC2 instances
   AVVersion:
     Type: String
-    Description: The version of Cybereason to deploy
+    Description: The version of the antivirus to deploy
     AllowedValues:
     - "20.2.282.0"
   LogBucketName:
@@ -44,7 +44,7 @@ Metadata:
       AVTagValues:
         default: Value(s) used to deploy the antivirus
       AVVersion:
-        default: Version of Cybereason to deploy
+        default: Version of the antivirus to deploy
       LogBucketName:
         default: Name of an existing bucket that you want to use or leave blank to create a new bucket
       LogBucketPrefix:
