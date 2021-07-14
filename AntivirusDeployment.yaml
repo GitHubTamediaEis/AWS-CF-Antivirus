@@ -110,10 +110,10 @@ Resources:
             - !Sub |
                 #!/bin/bash
                 set -e
-                if ! rpm -qi cybereason-sensor-${AVVersion} --quiet; then
+                if ! rpm -qi cybereason-sensor-${AVVersion}-1 --quiet; then
                   agentPath='/tmp/cybereasonInstall'
-                  aws s3 cp s3://cybereasonsensor/Linux/ $agentPath --recursive
-                  rpm -ihv $agentPath/cybereason-sensor-${AVVersion}.x86_64_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_rpm.rpm
+                  aws s3 cp s3://cybereasonsensor/Linux/cybereason-sensor-${AVVersion}-1.x86_64_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_rpm.rpm $agentPath
+                  rpm -ihv $agentPath/cybereason-sensor-${AVVersion}-1.x86_64_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_rpm.rpm
                   rm -rf $agentPath
                 fi
   CybereasonDocumentAssociation:
