@@ -9,10 +9,17 @@ Parameters:
     Default: 'yes'
     Type: CommaDelimitedList
     Description: Tag values of the target EC2 instances
-  AVVersion:
+  AVVersionWindows:
     Type: String
-    Description: The version of the antivirus to deploy
+    Description: The version of the antivirus to deploy for Windows
     AllowedValues:
+    - "21.1.261.0"
+    - "20.2.282.0"
+  AVVersionLinux:
+    Type: String
+    Description: The version of the antivirus to deploy for Linux
+    AllowedValues:
+    - "21.1.306.0"
     - "20.2.282.0"
   LogBucketName:
     Type: String
@@ -31,7 +38,8 @@ Metadata:
         Parameters:
           - AVTagName
           - AVTagValues
-          - AVVersion
+          - AVVersionWindows
+          - AVVersionLinux
       -
         Label:
           default: Logging
@@ -43,8 +51,10 @@ Metadata:
         default: Name of the tag used to deploy the antivirus
       AVTagValues:
         default: Value(s) used to deploy the antivirus
-      AVVersion:
-        default: Version of the antivirus to deploy
+      AVVersionWindows:
+        default: Version of the antivirus to deploy for Windows
+      AVVersionLinux:
+        default: Version of the antivirus to deploy for Linux
       LogBucketName:
         default: Name of an existing bucket that you want to use or leave blank to create a new bucket
       LogBucketPrefix:
@@ -93,10 +103,10 @@ Resources:
             runCommand:
             - !Sub  |
                 $ErrorActionPreference = "Stop"
-                if(-not (Get-WmiObject Win32_Product -Filter "Name='Cybereason Sensor' AND Version >= '${AVVersion}'")){
+                if(-not (Get-WmiObject Win32_Product -Filter "Name='Cybereason Sensor' AND Version >= '${AVVersionWindows}'")){
                   $folder=Join-Path ([System.IO.Path]::GetTempPath()) 'CybereasonInstall'
                   Copy-S3Object -BucketName 'cybereasonsensor' -KeyPrefix '/Windows/' -LocalFolder $folder
-                  Start-Process (Join-Path $folder ('CybereasonSensor64_'+('${AVVersion}' -replace '\.','_')+'_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL')) -ArgumentList '/install','/norestart','/quiet','-l C:\Windows\Temp\CybereasonInstall.log','AP_POLICIES_INITIAL_POLICY_ID=e38bbdd5-f4d2-47d5-b1d9-7ad69ad22ca0' -Wait
+                  Start-Process (Join-Path $folder ('CybereasonSensor64_'+('${AVVersionWindows}' -replace '\.','_')+'_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL')) -ArgumentList '/install','/norestart','/quiet','-l C:\Windows\Temp\CybereasonInstall.log','AP_POLICIES_INITIAL_POLICY_ID=e38bbdd5-f4d2-47d5-b1d9-7ad69ad22ca0' -Wait
                   Remove-Item $folder -Force -Recurse
                 }
         - action: aws:runShellScript
@@ -110,10 +120,10 @@ Resources:
             - !Sub |
                 #!/bin/bash
                 set -e
-                if ! rpm -qi cybereason-sensor-${AVVersion}-1 --quiet; then
+                if ! rpm -qi cybereason-sensor-${AVVersionLinux}-1 --quiet; then
                   agentPath='/tmp/cybereasonInstall/'
-                  aws s3 cp s3://cybereasonsensor/Linux/cybereason-sensor-${AVVersion}-1.x86_64_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_rpm.rpm $agentPath
-                  rpm -Uhv $agentPath/cybereason-sensor-${AVVersion}-1.x86_64_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_rpm.rpm
+                  aws s3 cp s3://cybereasonsensor/Linux/cybereason-sensor-${AVVersionLinux}-1.x86_64_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_rpm.rpm $agentPath
+                  rpm -Uhv $agentPath/cybereason-sensor-${AVVersionLinux}-1.x86_64_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_rpm.rpm
                   rm -rf $agentPath
                 fi
   CybereasonDocumentAssociation:
