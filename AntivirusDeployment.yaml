@@ -13,12 +13,14 @@ Parameters:
     Type: String
     Description: The version of the antivirus to deploy for Windows
     AllowedValues:
+    - "21.2.84.0"
     - "21.1.261.0"
     - "20.2.282.0"
   AVVersionLinux:
     Type: String
     Description: The version of the antivirus to deploy for Linux
     AllowedValues:
+    - "21.2.84.0"
     - "21.1.306.0"
     - "20.2.282.0"
   LogBucketName:
