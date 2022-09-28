@@ -31,3 +31,20 @@ Prerequisites to be able to deploy the Antivirus:
 - AWS CLI installed
 
 Instances must be listed in the [Managed Instances](https://console.aws.amazon.com/systems-manager/managed-instances) list of AWS Systems Manager. To show up in this list, the instances must meet the [Systems Manager Prerequisites](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-prereqs.html).
+
+You also need to add access to the s3 bucket containing Cybereason sensor to the IAM role assigned to the EC2 instance.
+Here is the content to add:
+{
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::cybereasonsensor/*",
+                "arn:aws:s3:::cybereasonsensor"
+            ]
+	]
+}
