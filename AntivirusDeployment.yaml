@@ -13,6 +13,7 @@ Parameters:
     Type: String
     Description: The version of the antivirus to deploy for Windows
     AllowedValues:
+    - "22.1.187.0"
     - "21.2.84.0"
     - "21.1.261.0"
     - "20.2.282.0"
@@ -20,6 +21,7 @@ Parameters:
     Type: String
     Description: The version of the antivirus to deploy for Linux
     AllowedValues:
+    - "22.1.187.0"
     - "21.2.84.0"
     - "21.1.306.0"
     - "20.2.282.0"
