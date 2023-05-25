@@ -127,7 +127,7 @@ Resources:
             - !Sub |
                 #!/bin/bash 
                 set -e 
-                if ! yum info cybereason-sensor-${AVVersionLinux}-1 >/dev/null 2>&1; then
+                if ! yum list installed | grep cybereason-sensor-${AVVersionLinux}-1 >/dev/null 2>&1; then
                   agentPath='/tmp/cybereasonInstall/' 
                   aws s3 cp s3://cybereasonsensor/Linux/cybereason-sensor-${AVVersionLinux}-1.x86_64_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_rpm.rpm $agentPath 
                   yum install -y $agentPath/cybereason-sensor-${AVVersionLinux}-1.x86_64_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_rpm.rpm 
