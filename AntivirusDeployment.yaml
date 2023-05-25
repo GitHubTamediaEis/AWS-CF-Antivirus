@@ -22,6 +22,7 @@ Parameters:
     Type: String
     Description: The version of the antivirus to deploy for Linux
     AllowedValues:
+    - "ness-23.1.44.0"
     - "23.1.44.0"
     - "22.1.187.0"
     - "21.2.84.0"
