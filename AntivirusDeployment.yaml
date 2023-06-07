@@ -135,7 +135,7 @@ Resources:
                     rm -rf $agentPath
                   fi
                 fi
-  Cybereasondocumentassociation:
+  CybereasonDocumentAssociation:
     Type: AWS::SSM::Association
     Properties:
       OutputLocation:
