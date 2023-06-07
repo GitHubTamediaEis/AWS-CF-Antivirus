@@ -73,7 +73,7 @@ Resources:
     Properties:
       BucketName: !Sub cybereason-logging-${AWS::AccountId}
       LifecycleConfiguration:
-        Rules: 
+        Rules:
         - ExpirationInDays: 90
           Status: Enabled
   CybereasonDocument:
@@ -125,15 +125,17 @@ Resources:
           inputs:
             runCommand:
             - !Sub |
-                #!/bin/bash 
-                set -e 
-                if ! yum list installed | grep cybereason-sensor-${AVVersionLinux}-1 >/dev/null 2>&1; then
-                  agentPath='/tmp/cybereasonInstall/' 
-                  aws s3 cp s3://cybereasonsensor/Linux/cybereason-sensor-${AVVersionLinux}-1.x86_64_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_rpm.rpm $agentPath 
-                  yum install -y $agentPath/cybereason-sensor-${AVVersionLinux}-1.x86_64_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_rpm.rpm 
-                  rm -rf $agentPath 
+                #!/bin/bash
+                set -e
+                if [ $(uname -m) = "x86_64" ]; then
+                  if ! yum list installed | grep cybereason-sensor-${AVVersionLinux}-1 >/dev/null 2>&1; then
+                    agentPath='/tmp/cybereasonInstall/'
+                    aws s3 cp s3://cybereasonsensor/Linux/cybereason-sensor-${AVVersionLinux}-1.x86_64_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_rpm.rpm $agentPath
+                    yum install -y $agentPath/cybereason-sensor-${AVVersionLinux}-1.x86_64_tamedia_tamedia-r.cybereason.net_443_ACTIVE_NORMAL_rpm.rpm
+                    rm -rf $agentPath
+                  fi
                 fi
-  CybereasonDocumentAssociation:
+  Cybereasondocumentassociation:
     Type: AWS::SSM::Association
     Properties:
       OutputLocation:
