@@ -135,6 +135,7 @@ Resources:
                     rm -rf $agentPath
                   fi
                 fi
+                #End
   CybereasonDocumentAssociation:
     Type: AWS::SSM::Association
     Properties:
